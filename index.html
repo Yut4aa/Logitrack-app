@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogiTrack App</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/particles.css">
+    <link rel="stylesheet" href="css/calendar.css">
+</head>
+<body>
+    <div id="particles-js"></div>
+    <div class="app-container">
+        <div class="sidebar">
+            <button onclick="showSection('upload')">
+                <i data-feather="upload"></i>
+                <span>Subir Factura</span>
+            </button>
+            <button onclick="showSection('calendar')">
+                <i data-feather="calendar"></i>
+                <span>Calendario</span>
+            </button>
+            <button onclick="showSection('qr')">
+                <i data-feather="maximize-2"></i>
+                <span>Escanear QR</span>
+            </button>
+            <button onclick="logout()">
+                <i data-feather="log-out"></i>
+                <span>Cerrar Sesión</span>
+            </button>
+        </div>
+
+        <div class="main-content">
+            <div class="logo-title" data-aos="fade-down" style="margin-top: 20px;">
+                <img src="assets/images/logo.png" alt="LogiTrack Logo" class="logo-img" style="height: 60px;">
+                <h1>LogiTrack</h1>
+            </div>
+
+            <div id="upload" class="section active">
+                <div class="card" data-aos="fade-up">
+                    <h2>Subir Factura o Devolución</h2>
+                    <form class="upload-form" id="upload-form">
+                        <div class="stars-container" id="stars-container"></div>
+                        <input type="text" id="truck-plate" placeholder="Patente del Camión" required>
+                        <input type="file" id="document-file" accept="image/*" required>
+                        <button type="submit">Subir Documento</button>
+                    </form>
+                </div>
+            </div>
+
+            <div id="calendar" class="section">
+                <div class="card" data-aos="fade-up">
+                    <div class="calendar-header">
+                        <button id="prev-month">&lt;</button>
+                        <h2 id="current-month-year"></h2>
+                        <button id="next-month">&gt;</button>
+                    </div>
+                    <div class="calendar-day-headers">
+                        <div class="calendar-day-header">Lun</div>
+                        <div class="calendar-day-header">Mar</div>
+                        <div class="calendar-day-header">Mié</div>
+                        <div class="calendar-day-header">Jue</div>
+                        <div class="calendar-day-header">Vie</div>
+                        <div class="calendar-day-header">Sáb</div>
+                        <div class="calendar-day-header">Dom</div>
+                    </div>
+                    <div class="calendar" id="calendar-grid"></div>
+                    <div id="documents-list"></div>
+                </div>
+            </div>
+
+            <div id="qr" class="section">
+                <div class="card" data-aos="fade-up">
+                    <h2>Escanear QR del Camión</h2>
+                    <div class="qr-section">
+                        <p>Usa la cámara de tu dispositivo para escanear el código QR y acceder a la información del camión.</p>
+                        <div class="qr-placeholder">
+                            <i data-feather="maximize-2" style="width: 80px; height: 80px;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="js/particles-config.js"></script>
+    <script src="js/upload-form.js"></script>
+    <script src="js/calendar.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>
