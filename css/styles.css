@@ -315,7 +315,7 @@ h1, h2 {
 }
 
 /* Document list */
-#documents-list {
+#documents-list, #vehicle-documents-list {
     margin-top: 20px;
 }
 
@@ -327,12 +327,62 @@ h1, h2 {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    animation: fadeIn 0.5s ease;
 }
 
 .document-item img {
     max-width: 100px;
     border-radius: 5px;
 }
+
+/* NUEVOS ESTILOS PARA LA SECCIÓN DE VEHÍCULOS */
+#vehicle-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+@media (min-width: 1024px) {
+    #vehicle-list-container {
+        flex-direction: row;
+    }
+}
+
+#vehicle-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex-basis: 30%; /* Ocupa el 30% del espacio en escritorio */
+    min-width: 200px;
+}
+
+.vehicle-item {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.vehicle-item:hover {
+    background: rgba(127, 219, 255, 0.3);
+    border-color: var(--accent);
+}
+
+.vehicle-item.selected {
+    background-color: var(--light-blue);
+    font-weight: bold;
+}
+
+#vehicle-documents-list {
+    flex-basis: 70%; /* Ocupa el 70% del espacio en escritorio */
+}
+
+#vehicle-documents-list h3 {
+    margin-top: 0;
+}
+
 
 /* QR Section */
 .qr-section {

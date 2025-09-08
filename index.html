@@ -20,6 +20,10 @@
                 <i data-feather="calendar"></i>
                 <span>Calendario</span>
             </button>
+            <button onclick="showSection('vehicles')">
+                <i data-feather="truck"></i>
+                <span>Vehículos</span>
+            </button>
             <button onclick="showSection('qr')">
                 <i data-feather="maximize-2"></i>
                 <span>Escanear QR</span>
@@ -66,6 +70,17 @@
                     </div>
                     <div class="calendar" id="calendar-grid"></div>
                     <div id="documents-list"></div>
+                </div>
+            </div>
+            
+            <div id="vehicles" class="section">
+                <div class="card" data-aos="fade-up">
+                    <h2>Vehículos Registrados</h2>
+                    <p>Selecciona una patente para ver sus documentos asociados.</p>
+                    <div id="vehicle-list-container">
+                        <div id="vehicle-list"></div>
+                        <div id="vehicle-documents-list"></div>
+                    </div>
                 </div>
             </div>
 

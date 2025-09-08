@@ -6,12 +6,18 @@ document.addEventListener('DOMContentLoaded', function() {
         uploadForm.addEventListener('submit', function(event) {
             event.preventDefault();
             
-            const plate = document.getElementById('truck-plate').value;
+            const plateInput = document.getElementById('truck-plate');
+            const plate = plateInput.value.toUpperCase().trim(); // Convertir a mayúsculas y quitar espacios
             const fileInput = document.getElementById('document-file');
             const file = fileInput.files[0];
             
             if (!file) {
                 alert('Por favor, selecciona un archivo.');
+                return;
+            }
+
+            if (!plate) {
+                alert('Por favor, ingresa la patente del camión.');
                 return;
             }
             
@@ -35,11 +41,16 @@ document.addEventListener('DOMContentLoaded', function() {
             if (typeof renderCalendar === 'function') {
                 renderCalendar();
             }
+
+            // ACTUALIZAR LA LISTA DE VEHÍCULOS POR SI SE AÑADIÓ UNA NUEVA PATENTE
+            if (typeof renderVehicles === 'function') {
+                renderVehicles();
+            }
             
             alert('Documento subido con éxito.');
             
             // Limpiar el formulario
-            document.getElementById('truck-plate').value = '';
+            plateInput.value = '';
             fileInput.value = '';
         });
     }

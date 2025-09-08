@@ -24,6 +24,81 @@ function logout() {
     }
 }
 
+// NUEVA FUNCIÓN: Renderizar la lista de vehículos
+function renderVehicles() {
+    const vehicleListEl = document.getElementById('vehicle-list');
+    if (!vehicleListEl) return;
+
+    // 1. Obtener todas las patentes únicas
+    const allDocs = Object.values(documents).flat();
+    const uniquePlates = [...new Set(allDocs.map(doc => doc.plate))];
+    
+    vehicleListEl.innerHTML = ''; // Limpiar lista
+
+    if (uniquePlates.length === 0) {
+        vehicleListEl.innerHTML = '<p>No hay vehículos con documentos registrados.</p>';
+        return;
+    }
+
+    // 2. Crear un elemento por cada patente
+    uniquePlates.sort().forEach(plate => {
+        const vehicleItem = document.createElement('div');
+        vehicleItem.classList.add('vehicle-item');
+        vehicleItem.textContent = plate;
+        vehicleItem.dataset.plate = plate; // Guardar la patente en un data attribute
+
+        vehicleItem.addEventListener('click', () => {
+            // Marcar como seleccionado
+            document.querySelectorAll('.vehicle-item').forEach(item => item.classList.remove('selected'));
+            vehicleItem.classList.add('selected');
+            
+            showDocumentsForVehicle(plate);
+        });
+
+        vehicleListEl.appendChild(vehicleItem);
+    });
+}
+
+// NUEVA FUNCIÓN: Mostrar documentos para un vehículo específico
+function showDocumentsForVehicle(plate) {
+    const docListEl = document.getElementById('vehicle-documents-list');
+    if (!docListEl) return;
+
+    docListEl.innerHTML = ''; // Limpiar la lista de documentos
+
+    // 1. Filtrar todos los documentos para encontrar los que coincidan con la patente
+    const allDocs = Object.values(documents).flat();
+    const vehicleDocs = allDocs.filter(doc => doc.plate === plate);
+    
+    // 2. Mostrar los documentos
+    if (vehicleDocs.length > 0) {
+        const title = document.createElement('h3');
+        title.textContent = `Documentos para la patente ${plate}`;
+        docListEl.appendChild(title);
+        
+        vehicleDocs.forEach(doc => {
+            const docDate = new Date(doc.date);
+            const formattedDate = docDate.toLocaleDateString('es-ES');
+
+            const docItem = document.createElement('div');
+            docItem.classList.add('document-item');
+            docItem.innerHTML = `
+                <div>
+                    <strong>Fecha:</strong> ${formattedDate}<br>
+                    <strong>Tipo:</strong> ${doc.type}
+                </div>
+                <img src="${doc.fileUrl}" alt="Documento">
+            `;
+            docListEl.appendChild(docItem);
+        });
+    } else {
+        const message = document.createElement('p');
+        message.textContent = `No se encontraron documentos para la patente ${plate}.`;
+        docListEl.appendChild(message);
+    }
+}
+
+
 // Inicialización de la aplicación
 document.addEventListener('DOMContentLoaded', function() {
     // Inicializar animaciones
@@ -70,4 +145,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (typeof renderCalendar === 'function') {
         renderCalendar();
     }
+
+    // INICIALIZAR LA LISTA DE VEHÍCULOS
+    renderVehicles();
 });
