@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogiTrack App</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/particles.css">
+    <link rel="stylesheet" href="css/calendar.css">
+    <style>
+        /* Estilos para el modal de QR */
+        .qr-modal {
+            display: none; position: fixed; z-index: 1000;
+            left: 0; top: 0; width: 100%; height: 100%;
+            overflow: auto; background-color: rgba(0,0,0,0.6);
+            justify-content: center; align-items: center;
+        }
+        .qr-modal-content {
+            background-color: #fff; padding: 30px; border-radius: 10px;
+            text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        .qr-modal-content h3 { color: #333; } /* Arreglo para texto blanco */
+        .close-modal {
+            position: absolute; top: 10px; right: 15px;
+            font-size: 30px; font-weight: bold; cursor: pointer; color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+    <div class="app-container">
+        <div class="sidebar">
+            <button id="btn-upload" onclick="showSection('upload')">
+                <i data-feather="upload"></i>
+                <span>Subir Factura</span>
+            </button>
+            <button id="btn-calendar" onclick="showSection('calendar')">
+                <i data-feather="calendar"></i>
+                <span>Calendario</span>
+            </button>
+            <button id="btn-vehicles" onclick="showSection('vehicles')">
+                <i data-feather="truck"></i>
+                <span>Vehículos</span>
+            </button>
+            <button onclick="logout()">
+                <i data-feather="log-out"></i>
+                <span>Cerrar Sesión</span>
+            </button>
+        </div>
+
+        <div class="main-content">
+            <div class="logo-title" data-aos="fade-down" style="margin-top: 20px;">
+                <img src="assets/images/logo.png" alt="LogiTrack Logo" class="logo-img" style="height: 60px;">
+                <h1>LogiTrack</h1>
+            </div>
+
+            <div id="upload" class="section active">
+                <div class="card" data-aos="fade-up">
+                    <h2>Subir Factura o Devolución</h2>
+                    <form class="upload-form" id="upload-form">
+                        <div class="stars-container" id="stars-container"></div>
+                        
+                        <label for="truck-plate-select">Seleccionar Camión:</label>
+                        <select id="truck-plate-select" required>
+                            <option value="">Primero debe agregar un camión</option>
+                        </select>
+                        
+                        <input type="file" id="document-file" accept="image/*" required>
+                        <button type="submit" id="upload-submit-btn">Subir Documento</button>
+                    </form>
+                </div>
+            </div>
+
+            <div id="calendar" class="section">
+                <div class="card" data-aos="fade-up">
+                    <div class="calendar-header">
+                        <button id="prev-month">&lt;</button>
+                        <h2 id="current-month-year"></h2>
+                        <button id="next-month">&gt;</button>
+                    </div>
+                    <div class="calendar-day-headers">
+                        <div class="calendar-day-header">Lun</div><div class="calendar-day-header">Mar</div>
+                        <div class="calendar-day-header">Mié</div><div class="calendar-day-header">Jue</div>
+                        <div class="calendar-day-header">Vie</div><div class="calendar-day-header">Sáb</div>
+                        <div class="calendar-day-header">Dom</div>
+                    </div>
+                    <div class="calendar" id="calendar-grid"></div>
+                    <div id="documents-list"></div>
+                </div>
+            </div>
+            
+            <div id="vehicles" class="section">
+                <div class="card" data-aos="fade-up">
+                    <h2>Agregar Nuevo Camión</h2>
+                    <p>Todos los campos son obligatorios.</p>
+                    <form id="add-truck-form" class="add-truck-form">
+                        <input type="text" id="truck-plate" placeholder="Patente (Ej: ABCD12)" required>
+                        <input type="text" id="truck-model" placeholder="Modelo (Ej: Volvo FH16)" required>
+                        <input type="text" id="truck-driver" placeholder="Nombre del Conductor" required>
+                        <button type="submit">Agregar Camión</button>
+                    </form>
+                </div>
+
+                <div class="card" data-aos="fade-up" style="margin-top: 20px;">
+                    <h2>Camiones Registrados</h2>
+                    <div id="trucks-container">
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="qr-modal" class="qr-modal">
+        <div class="qr-modal-content">
+            <span class="close-modal" onclick="closeQrModal()">&times;</span>
+            <h3 id="qr-modal-title">QR del Vehículo</h3>
+            <div id="qr-modal-code" style="padding: 20px;"></div>
+            <a id="qr-modal-download" href="#" download="qr-patente.png" class="btn">Descargar QR</a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="js/particles-config.js"></script> <script src="js/script.js"></script> <script src="js/calendar.js"></script>
+    <script src="js/upload-form.js"></script>
+    <script src="js/trucks.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+</body>
+</html>

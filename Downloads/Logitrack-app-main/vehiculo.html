@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Información del Vehículo</title>
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <style>
+        .document-list {
+            margin-top: 20px;
+            text-align: left;
+        }
+        .document-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            
+            /* Prepara el item para una transición suave */
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        /* Efecto hover actualizado (sin fondo blanco) */
+        .document-item:hover {
+            transform: translateY(-3px); /* Efecto de "levantar" */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08); /* Sombra sutil */
+        }
+
+        .document-item img {
+            max-width: 100px;
+            height: auto;
+            border-radius: 4px;
+        }
+        
+        /* Espaciado aumentado */
+        .document-item-info {
+            flex-grow: 1;
+            margin-left: 20px; /* Aumentado de 15px a 20px */
+        }
+        
+        .download-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            text-decoration: none;
+            padding: 5px 10px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="card" style="max-width: 800px; margin: 50px auto; transition: none; transform: none;">
+        
+        <h2>Información del Camión</h2>
+        <div id="truck-info" style="text-align: left; margin-bottom: 20px;">
+            <p><strong>Patente:</strong> <span id="plate"></span></p>
+            <p><strong>Modelo:</strong> <span id="model"></span></p>
+            <p><strong>Conductor:</strong> <span id="driver"></span></p>
+        </div>
+        
+        <hr>
+
+        <h3>Documentos Asociados</h3>
+        <div id="documents-container" class="document-list">
+            </div>
+        
+        <a href="index.html" class="btn" style="margin-top: 20px;">Volver al Panel</a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const plate = urlParams.get('patente');
+            
+            const plateEl = document.getElementById('plate');
+            const modelEl = document.getElementById('model');
+            const driverEl = document.getElementById('driver');
+            const documentsContainer = document.getElementById('documents-container');
+
+            if (!plate) {
+                document.getElementById('truck-info').innerHTML = '<p>Error: No se especificó una patente.</p>';
+                return;
+            }
+
+            // 1. Cargar info del camión
+            const trucks = JSON.parse(localStorage.getItem('logitrack_trucks')) || [];
+            const truck = trucks.find(t => t.plate === plate);
+
+            if (truck) {
+                plateEl.textContent = truck.plate;
+                modelEl.textContent = truck.model || 'No registrado';
+                driverEl.textContent = truck.driver || 'No registrado';
+            } else {
+                plateEl.textContent = plate;
+                modelEl.textContent = 'Camión no encontrado';
+            }
+
+            // 2. Cargar y filtrar documentos
+            const allDocuments = JSON.parse(localStorage.getItem('logitrack_documents')) || {};
+            let truckDocuments = [];
+
+            for (const dateKey in allDocuments) {
+                const docsForDay = allDocuments[dateKey];
+                const filteredDocs = docsForDay.filter(doc => doc.plate === plate);
+                truckDocuments.push(...filteredDocs);
+            }
+
+            // 3. Renderizar los documentos
+            if (truckDocuments.length === 0) {
+                documentsContainer.innerHTML = '<p>Este camión no tiene documentos registrados.</p>';
+            } else {
+                truckDocuments.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                documentsContainer.innerHTML = truckDocuments.map(doc => {
+                    const docDate = new Date(doc.date);
+                    const formattedDate = docDate.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                    const formattedTime = docDate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+                    const fileName = `doc_${doc.plate}_${docDate.toISOString().split('T')[0]}.png`;
+
+                    return `
+                        <div class="document-item">
+                            <img src="${doc.fileUrl}" alt="Previsualización">
+                            <div class="document-item-info">
+                                <strong>Fecha:</strong> ${formattedDate} (${formattedTime})<br>
+                                <strong>Tipo:</strong> ${doc.type}
+                            </div>
+                            <a href="${doc.fileUrl}" download="${fileName}" class="download-link">
+                                <i data-feather="download" width="16" height="16"></i>
+                                Descargar
+                            </a>
+                        </div>
+                    `;
+                }).join('');
+                
+                if (typeof feather !== 'undefined') {
+                    feather.replace();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
