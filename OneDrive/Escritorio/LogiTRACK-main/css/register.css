@@ -1,0 +1,268 @@
+/* Estilos generales */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(135deg, #0d2b4b 0%, #1a3a6a 100%);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    color: #333;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* Elementos decorativos de fondo */
+.background-elements {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.element {
+    position: absolute;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 8px;
+    animation: float 20s infinite ease-in-out;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0) translateX(0) rotate(0deg);
+    }
+    33% {
+        transform: translateY(-20px) translateX(15px) rotate(3deg);
+    }
+    66% {
+        transform: translateY(10px) translateX(-20px) rotate(-3deg);
+    }
+}
+
+/* Contenedor principal */
+.register-container {
+    background-color: #ffffff;
+    padding: 45px 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    width: 100%;
+    max-width: 500px;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    animation: fadeIn 0.8s ease-out;
+    transform-style: preserve-3d;
+    margin: 20px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.logo {
+    margin-bottom: 25px;
+    color: #1a3a6a;
+    font-size: 2.8rem;
+}
+
+.register-container h2 {
+    margin-bottom: 15px;
+    color: #1a3a6a;
+    font-size: 1.8em;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    animation: slideInFromTop 0.8s ease-out;
+}
+
+@keyframes slideInFromTop {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.register-container p {
+    color: #6c757d;
+    margin-bottom: 30px;
+    font-weight: 400;
+    line-height: 1.5;
+    animation: fadeIn 1s ease-out 0.2s both;
+}
+
+/* Formulario de registro */
+.register-form {
+    animation: fadeIn 1s ease-out 0.4s both;
+}
+
+.register-form .input-group {
+    margin-bottom: 22px;
+    text-align: left;
+    position: relative;
+}
+
+.register-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #495057;
+    font-size: 0.95em;
+    transition: all 0.3s ease;
+}
+
+.input-container {
+    position: relative;
+}
+
+.register-form input {
+    width: 100%;
+    padding: 14px 15px 14px 45px;
+    background-color: #f8f9fa;
+    border: 1px solid #e1e5eb;
+    border-radius: 6px;
+    font-size: 15px;
+    color: #495057;
+    transition: all 0.3s ease;
+}
+
+.register-form input::placeholder {
+    color: #adb5bd;
+}
+
+.register-form input:focus {
+    outline: none;
+    background-color: #ffffff;
+    border-color: #1a3a6a;
+    box-shadow: 0 0 0 3px rgba(26, 58, 106, 0.1);
+}
+
+.input-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #adb5bd;
+    transition: all 0.3s ease;
+}
+
+.register-form input:focus + .input-icon {
+    color: #1a3a6a;
+}
+
+/* Términos y condiciones */
+.terms {
+    display: flex;
+    align-items: flex-start;
+    margin: 20px 0;
+    text-align: left;
+}
+
+.terms input {
+    margin-right: 10px;
+    margin-top: 5px;
+}
+
+.terms label {
+    font-size: 0.9em;
+    color: #6c757d;
+    line-height: 1.4;
+}
+
+.terms a {
+    color: #1a3a6a;
+    text-decoration: none;
+}
+
+.terms a:hover {
+    text-decoration: underline;
+}
+
+/* Botón de Registro */
+.register-form button {
+    width: 100%;
+    padding: 14px;
+    background-color: #1a3a6a;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.05em;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 0.5px;
+    margin-top: 10px;
+}
+
+.register-form button:hover {
+    background-color: #15294d;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(26, 58, 106, 0.2);
+}
+
+.register-form button:active {
+    transform: translateY(0);
+}
+
+/* Enlace para iniciar sesión */
+.login-link {
+    margin-top: 22px;
+    font-size: 0.95em;
+    animation: fadeIn 1s ease-out 0.6s both;
+    color: #6c757d;
+}
+
+.login-link a {
+    color: #1a3a6a;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+    color: #0d2b4b;
+}
+
+/* Copyright */
+.copyright {
+    margin-top: 30px;
+    font-size: 0.85em;
+    color: #6c757d;
+    animation: fadeIn 1s ease-out 1s both;
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+    .register-container {
+        padding: 35px 25px;
+        margin: 0 15px;
+    }
+    
+    .register-container h2 {
+        font-size: 1.6em;
+    }
+    
+    .logo {
+        font-size: 2.4rem;
+    }
+}

@@ -1,0 +1,646 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --navy-blue: #001a35;
+    --light-blue: #0074D9;
+    --white: #FFFFFF;
+    --accent: #7FDBFF;
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #001a35 0%, #00264d 100%);
+    color: var(--white);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* ===== LAYOUT PRINCIPAL ===== */
+.app-container {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+/* ===== SIDEBAR - ESCRITORIO ===== */
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    background: rgba(0, 26, 53, 0.95);
+    backdrop-filter: blur(10px);
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    padding-top: 30px;
+    z-index: 1000;
+    box-shadow: var(--shadow);
+}
+
+.sidebar-logo {
+    display: block;
+    padding: 20px 15px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 30px;
+    width: 100%;
+}
+
+.sidebar-logo img {
+    height: 70px;
+    width: auto;
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+.sidebar button {
+    background: transparent;
+    border: none;
+    color: var(--white);
+    padding: 15px 20px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 10px;
+    width: calc(100% - 30px);
+    margin: 8px 15px;
+    font-size: 1em;
+    text-align: left;
+}
+
+.sidebar button:hover {
+    background: rgba(0, 116, 217, 0.2);
+    transform: translateY(-2px);
+}
+
+.sidebar button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.sidebar button i {
+    margin-right: 15px;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.sidebar button span {
+    font-size: 0.95em;
+    opacity: 1;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.sidebar button[style*="display: none"] {
+    display: none !important;
+}
+
+/* ===== CONTENIDO PRINCIPAL - ESCRITORIO ===== */
+.main-content {
+    margin-left: 250px;
+    padding: 30px;
+    width: calc(100% - 250px);
+    min-height: 100vh;
+}
+
+.logo-title {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 15px;
+    margin: 0 0 20px 0 !important;
+    text-align: left;
+}
+
+.logo-img {
+    height: 40px;
+    width: auto;
+    object-fit: contain;
+}
+
+#sidebar-welcome {
+    font-size: 1.6em;
+    text-align: left;
+}
+
+/* ===== SECCIONES Y CARDS ===== */
+.section {
+    display: none;
+    animation: fadeIn 0.5s ease forwards;
+}
+
+.section.active {
+    display: block;
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 30px;
+    margin-bottom: 25px;
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+h1, h2, h3 {
+    color: var(--white);
+    margin-bottom: 15px;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+h1 {
+    font-size: 2.2em;
+}
+
+h2 {
+    font-size: 1.8em;
+}
+
+h3 {
+    font-size: 1.2em;
+}
+
+/* ===== FORMULARIOS ===== */
+.upload-form, .add-truck-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.upload-form input,
+.upload-form select,
+.add-truck-form input[type="text"],
+.add-truck-form input[type="email"] {
+    width: 100%;
+    padding: 12px 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: var(--white);
+    font-size: 1em;
+    transition: all 0.3s ease;
+}
+
+.upload-form input:focus,
+.upload-form select:focus,
+.add-truck-form input[type="text"]:focus,
+.add-truck-form input[type="email"]:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(127, 219, 255, 0.3);
+}
+
+.upload-form input::placeholder,
+.add-truck-form input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.upload-form select {
+    appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="white" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 16px;
+}
+
+/* File Upload */
+.upload-form input[type="file"] {
+    display: none;
+}
+
+.file-upload-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 2px dashed rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #f0f0f0;
+    text-align: center;
+}
+
+.file-upload-label:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent);
+}
+
+.file-upload-label i {
+    margin-right: 10px;
+}
+
+/* Botones */
+.upload-form button,
+.add-truck-form button[type="submit"] {
+    background: var(--light-blue);
+    color: var(--white);
+    border: none;
+    padding: 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1em;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.upload-form button:hover,
+.add-truck-form button[type="submit"]:hover {
+    background: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 116, 217, 0.4);
+}
+
+.upload-form button:disabled,
+.add-truck-form button[type="submit"]:disabled {
+    background: #4a4a5a;
+    cursor: not-allowed;
+    transform: none;
+    opacity: 0.7;
+}
+
+/* ===== LAYOUT DE FORMULARIOS ===== */
+.form-group-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.assigned-truck-info {
+    padding: 12px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: #fff;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* ===== GENERADOR QR ===== */
+.qr-label-maker {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-top: 20px;
+}
+
+.qr-label-maker .form-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.qr-label-maker label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #eee;
+}
+
+.qr-label-maker input[type="text"],
+.qr-label-maker textarea {
+    width: 100%;
+    padding: 12px 15px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border-radius: 8px;
+    font-size: 1em;
+    box-sizing: border-box;
+}
+
+.qr-label-maker textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.qr-label-maker button[type="submit"] {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.qr-output {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 20px;
+    min-height: 250px;
+}
+
+#qr-package-code {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    min-width: 200px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+/* ===== BADGE TIPO USUARIO ===== */
+.user-type-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.7em;
+    font-weight: 600;
+    margin-left: 10px;
+    vertical-align: middle;
+}
+
+.user-type-empresa {
+    background-color: #667eea;
+    color: white;
+}
+
+.user-type-camionero {
+    background-color: #28a745;
+    color: white;
+}
+
+/* ===== VEHÍCULOS ===== */
+#trucks-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px;
+    margin-top: 20px;
+}
+
+.truck-card {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.truck-card-info {
+    cursor: pointer;
+}
+
+.truck-header h4 {
+    color: var(--accent);
+    margin-bottom: 10px;
+}
+
+.truck-info p {
+    margin: 5px 0;
+    font-size: 0.9em;
+}
+
+.truck-card-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    justify-content: flex-end;
+}
+
+/* ===== MEDIA QUERIES - MÓVIL ===== */
+@media (max-width: 767px) {
+    .app-container {
+        flex-direction: column;
+    }
+    
+    /* SIDEBAR MÓVIL - HORIZONTAL INFERIOR */
+    .sidebar {
+        width: 100%;
+        height: auto;
+        min-height: 70px;
+        background: rgba(0, 26, 53, 0.95);
+        backdrop-filter: blur(10px);
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        top: auto;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center;
+        justify-content: space-around;
+        padding: 10px 5px;
+        box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.4);
+        border-top: 1px solid rgba(127, 219, 255, 0.2);
+    }
+    
+    .sidebar-logo {
+        display: none !important;
+    }
+    
+    .sidebar button {
+        flex-direction: column;
+        height: 60px;
+        width: 70px;
+        padding: 8px 4px;
+        font-size: 0.7em;
+        text-align: center;
+        margin: 0 2px;
+        flex: 1;
+        max-width: 80px;
+    }
+    
+    .sidebar button i {
+        margin-right: 0 !important;
+        margin-bottom: 4px;
+        width: 18px;
+        height: 18px;
+    }
+    
+    .sidebar button span {
+        font-size: 0.7em;
+        opacity: 1 !important;
+        line-height: 1.2;
+    }
+    
+    .main-content {
+        margin-left: 0 !important;
+        margin-bottom: 80px;
+        padding: 20px 15px;
+        width: 100% !important;
+        min-height: calc(100vh - 80px);
+    }
+    
+    .logo-title {
+        justify-content: center;
+        text-align: center;
+        margin: 10px 0 20px 0 !important;
+    }
+    
+    #sidebar-welcome {
+        font-size: 1.3em;
+        text-align: center;
+    }
+    
+    .card {
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    
+    h1 {
+        font-size: 1.8em;
+    }
+    
+    h2 {
+        font-size: 1.5em;
+    }
+    
+    .form-group-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .qr-label-maker {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    #trucks-container {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+}
+
+/* ===== MEDIA QUERIES - MÓVILES PEQUEÑOS ===== */
+@media (max-width: 480px) {
+    .sidebar {
+        min-height: 65px;
+        padding: 8px 3px;
+    }
+    
+    .sidebar button {
+        width: 60px;
+        padding: 6px 3px;
+        height: 55px;
+    }
+    
+    .sidebar button span {
+        font-size: 0.65em;
+    }
+    
+    .main-content {
+        margin-bottom: 70px;
+        padding: 15px 10px;
+    }
+    
+    .card {
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+}
+
+@media (max-width: 320px) {
+    .sidebar button {
+        width: 55px;
+        font-size: 0.6em;
+    }
+    
+    .sidebar button span {
+        font-size: 0.6em;
+    }
+    
+    h1 {
+        font-size: 1.5em;
+    }
+    
+    h2 {
+        font-size: 1.3em;
+    }
+}
+
+/* ===== ANIMACIONES ===== */
+@keyframes fadeIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(20px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+/* ===== UTILIDADES ===== */
+.text-center {
+    text-align: center;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.mt-20 {
+    margin-top: 20px;
+}
+
+.mb-20 {
+    margin-bottom: 20px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.visible {
+    display: block !important;
+}
+
+/* ===== ESTADOS ESPECIALES ===== */
+.empresa-only, 
+.camionero-only {
+    transition: all 0.3s ease;
+}
+
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}

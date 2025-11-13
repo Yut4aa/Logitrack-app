@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogiTrack App</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/particles.css">
+    <link rel="stylesheet" href="css/calendar.css">
+    <style>
+        /* Estilos para el modal de QR */
+        .qr-modal {
+            display: none; position: fixed; z-index: 1000;
+            left: 0; top: 0; width: 100%; height: 100%;
+            overflow: auto; background-color: rgba(0,0,0,0.6);
+            justify-content: center; align-items: center;
+        }
+        .qr-modal-content {
+            background-color: #fff; padding: 30px; border-radius: 10px;
+            text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        .qr-modal-content h3 { color: #333; }
+        .close-modal {
+            position: absolute; top: 10px; right: 15px;
+            font-size: 30px; font-weight: bold; cursor: pointer; color: #333;
+        }
+        
+        /* Estilos para formulario limpio */
+        .upload-form .form-group { margin-bottom: 20px; text-align: left; }
+        .upload-form label { display: block; margin-bottom: 8px; font-weight: 500; color: #eee; }
+        .upload-form input[type="file"] { display: none; }
+        .upload-form .file-upload-label {
+            display: flex; align-items: center; justify-content: center;
+            padding: 12px 15px; background-color: rgba(255, 255, 255, 0.05);
+            border: 2px dashed rgba(255, 255, 255, 0.3); border-radius: 8px;
+            cursor: pointer; transition: all 0.2s ease; color: #f0f0f0;
+            height: 54px; box-sizing: border-box; 
+        }
+        .upload-form .file-upload-label:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary-color, #007bff);
+        }
+        .upload-form .file-upload-label i { margin-right: 10px; width: 20px; }
+        .upload-form .form-group-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 15px; margin-bottom: 20px;
+        }
+        @media (max-width: 600px) {
+            .upload-form .form-group-grid { grid-template-columns: 1fr; }
+        }
+        .upload-form .form-group-grid .form-group { margin-bottom: 0; }
+        .upload-form .form-group-grid .form-group select {
+            width: 100%; height: 54px; box-sizing: border-box;
+        }
+        .upload-form button[type="submit"] {
+            display: inline-flex; align-items: center;
+            justify-content: center; gap: 8px; width: 100%;
+        }
+        
+        /* Estilos del Sidebar */
+        .sidebar-logo {
+            padding: 20px 15px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .sidebar-logo img {
+            height: 70px; 
+            width: auto;
+            filter: invert(1) grayscale(100%) brightness(200%);
+        }
+        @media (max-width: 768px) { .sidebar-logo { display: none; } }
+
+        /* Estilos del Saludo */
+        .logo-title {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            margin-top: 20px !important;
+        }
+        .logo-title img { display: none; }
+        #sidebar-welcome {
+            font-size: 1.6em; font-weight: 600; color: #fff;
+            text-align: left; line-height: 1.4; flex-grow: 1; 
+        }
+        #sidebar-welcome strong { font-weight: 600; color: #fff; }
+        .logo-title h1 { display: none; }
+        .main-content .section { margin-top: 25px; }
+
+        /* --- ESTILOS PARA EL GENERADOR QR --- */
+        .qr-label-maker {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        .qr-label-maker .form-group {
+            margin-bottom: 15px; 
+            text-align: left;
+        }
+        .qr-label-maker label {
+            display: block; 
+            margin-bottom: 8px; 
+            font-weight: 500; 
+            color: #eee;
+        }
+        .qr-label-maker input[type="text"], 
+        .qr-label-maker textarea {
+            width: 100%;
+            padding: 15px;
+            background-color: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-radius: 8px;
+            font-size: 1em;
+            box-sizing: border-box;
+        }
+        .qr-label-maker textarea {
+            resize: none;
+            min-height: 60px;
+            transition: height 0.2s ease;
+            overflow-y: hidden;
+        }
+        .qr-label-maker textarea:focus {
+            border-color: #667eea;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+        }
+        .qr-label-maker button[type="submit"] {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .qr-label-maker button[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .qr-output {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 250px;
+        }
+        #qr-package-code {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 200px;
+            min-width: 200px;
+        }
+        #qr-package-code:empty::before {
+            content: "El QR aparecera aqui";
+            color: #aaa;
+            font-style: italic;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        @media (max-width: 900px) {
+            .qr-label-maker { grid-template-columns: 1fr; }
+        }
+        
+        /* Badge para tipo de usuario */
+        .user-type-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+        .user-type-empresa {
+            background-color: #667eea;
+            color: white;
+        }
+        .user-type-camionero {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        /* Estilos para elementos ocultos */
+        .empresa-only, .camionero-only {
+            transition: all 0.3s ease;
+        }
+
+        /* Asegurar que los botones del sidebar mantengan su posición */
+        .sidebar button {
+            position: relative;
+            transition: all 0.3s ease;
+            min-height: 50px;
+            display: flex !important;
+            align-items: center;
+            opacity: 1;
+        }
+
+        /* Cuando están ocultos, mantener el espacio pero hacerlos invisibles */
+        .sidebar button[style*="display: none"] {
+            display: none !important;
+        }
+
+        /* Cuando están deshabilitados pero visibles */
+        .sidebar button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Asegurar que el contenedor del sidebar mantenga su estructura */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        /* Estilos para formulario de agregar camion */
+        .add-truck-form .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .add-truck-form input[type="text"],
+        .add-truck-form input[type="email"] {
+            width: 100%;
+            padding: 15px;
+            background-color: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-radius: 8px;
+            font-size: 1em;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        .add-truck-form input[type="text"]:focus,
+        .add-truck-form input[type="email"]:focus {
+            border-color: #667eea;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+        }
+
+        .add-truck-form input[type="text"]::placeholder,
+        .add-truck-form input[type="email"]::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .add-truck-form button[type="submit"] {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .add-truck-form button[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+    <div class="app-container">
+        
+        <div class="sidebar">
+            
+            <div class="sidebar-logo">
+                <img src="img/pngwing.com.png" alt="LogiTrack Logo">
+            </div>
+            
+            <!-- Solo para empresas -->
+            <button id="btn-upload" onclick="showSection('upload')" class="empresa-only">
+                <i data-feather="upload"></i>
+                <span>Subir Factura</span>
+            </button>
+            
+            <button id="btn-label-maker" onclick="showSection('label-maker')">
+                <i data-feather="tag"></i> 
+                <span>Etiquetas QR</span> 
+            </button>
+            
+            <!-- Solo para empresas -->
+            <button id="btn-vehicles" onclick="showSection('vehicles')" class="empresa-only">
+                <i data-feather="truck"></i>
+                <span>Vehiculos</span>
+            </button>
+            
+            <button onclick="logout()">
+                <i data-feather="log-out"></i>
+                <span>Cerrar Sesion</span>
+            </button>
+        </div>
+
+        <div class="main-content">
+            
+            <div class="logo-title" data-aos="fade-down">
+                <div id="sidebar-welcome">
+                    Hola, <strong>Usuario</strong>
+                    <span id="user-type-badge" class="user-type-badge"></span>
+                </div>
+            </div>
+            
+            <!-- Sección Upload - Diferente para camioneros -->
+            <div id="upload" class="section active">
+                <div class="card" data-aos="fade-up">
+                    <h2 id="upload-title">Subir Documento</h2>
+                    <form class="upload-form" id="upload-form">
+                        <div class="stars-container" id="stars-container"></div>
+                        
+                        <!-- Para empresas: seleccionar camión -->
+                        <div class="form-group empresa-only" id="truck-select-group">
+                            <label for="truck-plate-select">Camion Asignado:</label>
+                            <select id="truck-plate-select" style="width: 100%; padding: 15px; background-color: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); color: #fff; border-radius: 8px; font-size: 1em; box-sizing: border-box;">
+                                <option value="">Primero debe agregar un camion</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Para camioneros: mostrar camión asignado -->
+                        <div class="form-group camionero-only" id="assigned-truck-info" style="display: none;">
+                            <label>Camion Asignado:</label>
+                            <div style="padding: 12px; background-color: rgba(255,255,255,0.1); border-radius: 8px; color: #fff;">
+                                <strong id="assigned-truck-plate"></strong>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group-grid">
+                            <div class="form-group">
+                                <label for="document-file" class="file-upload-label">
+                                    <i data-feather="file-plus"></i>
+                                    <span id="file-name-display">Seleccionar Archivo</span>
+                                </label>
+                                <input type="file" id="document-file" accept="image/*,application/pdf" required>
+                            </div>
+
+                            <div class="form-group">
+                                <select id="document-type-select" required style="width: 100%; padding: 15px; background-color: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); color: #fff; border-radius: 8px; font-size: 1em; box-sizing: border-box;">
+                                    <option value="" disabled selected>Tipo de Documento...</option>
+                                    <option value="Factura">Factura</option>
+                                    <option value="Devolucion">Devolucion</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" id="upload-submit-btn">
+                            <i data-feather="upload-cloud"></i> Subir Documento
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div id="label-maker" class="section">
+                <div class="card" data-aos="fade-up">
+                    <h2>Generador de Etiquetas QR</h2>
+                    <p>Informacion 100% local: Los datos se guardan DIRECTAMENTE en el codigo QR. No se almacena en la nube.</p>
+                    
+                    <div class="qr-label-maker">
+                        
+                        <form id="qr-label-form">
+                            <div class="form-group">
+                                <label for="qr-guia-id">ID de Factura / Guia *</label>
+                                <input type="text" id="qr-guia-id" placeholder="Ej: F-9080" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="qr-patente">Patente (Opcional)</label>
+                                <input type="text" id="qr-patente" placeholder="Ej: ABCD12">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="qr-destino">Destino / Cliente *</label>
+                                <input type="text" id="qr-destino" placeholder="Ej: Bodega Central" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="qr-notas">Notas (Opcional)</label>
+                                <textarea id="qr-notas" placeholder="Ej: Fragil, 2 cajas, instrucciones especiales..."></textarea>
+                            </div>
+                            
+                            <button type="submit">Generar QR</button>
+                        </form>
+                        
+                        <div class="qr-output">
+                            <div id="qr-package-code">
+                                <!-- Aqui aparecera el QR generado -->
+                            </div>
+                            <a id="qr-package-download" href="#" download="etiqueta-paquete.png" class="btn" style="display: none;">Descargar QR</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección Vehículos - Solo para empresas -->
+            <div id="vehicles" class="section">
+                
+                <div class="card" data-aos="fade-up">
+                    <h2>Agregar Nuevo Camion</h2>
+                    
+                    <form id="add-truck-form" class="add-truck-form">
+                        <div class="form-group">
+                            <input type="text" id="truck-plate" placeholder="Patente (Ej: ABCD12)" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <input type="text" id="truck-model" placeholder="Modelo (Ej: Volvo FH16)" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <input type="text" id="truck-driver" placeholder="Nombre del Conductor" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <input type="email" id="truck-driver-email" placeholder="Email del Camionero (Opcional)">
+                        </div>
+                        
+                        <small style="color: #ccc; display: block; margin-top: 5px; margin-bottom: 15px;">
+                            Si ingresas un email, se creará automáticamente una cuenta de camionero
+                        </small>
+                        
+                        <button type="submit">Agregar Camion</button>
+                    </form>
+                </div>
+
+                <h2 style="margin-top: 30px; margin-bottom: 10px; color: #fff; text-align: left;">Camiones Registrados</h2>
+                
+                <div id="trucks-container">
+                    <!-- Aqui se cargan los camiones -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="qr-modal" class="qr-modal">
+        <div class="qr-modal-content">
+            <span class="close-modal" onclick="closeQrModal()">&times;</span>
+            <h3 id="qr-modal-title">QR del Vehiculo</h3>
+            <div id="qr-modal-code" style="padding: 20px;"></div>
+            <a id="qr-modal-download" href="#" download="qr-patente.png" class="btn">Descargar QR</a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="js/particles-config.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <script src="js/script.js"></script>
+    <script src="js/qr-label-maker.js"></script>
+    <script src="js/upload-form.js"></script>
+    <script src="js/trucks.js"></script>
+
+    <script>
+        // Script para el textarea autoexpandible
+        document.addEventListener('DOMContentLoaded', function() {
+            const notasTextarea = document.getElementById('qr-notas');
+            
+            if (notasTextarea) {
+                notasTextarea.style.height = 'auto';
+                notasTextarea.style.height = notasTextarea.scrollHeight + 'px';
+
+                notasTextarea.addEventListener('input', function() {
+                    this.style.height = 'auto';
+                    this.style.height = this.scrollHeight + 'px';
+                });
+
+                notasTextarea.addEventListener('focus', function() {
+                    this.style.height = 'auto';
+                    this.style.height = this.scrollHeight + 'px';
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Información del Vehículo</title>
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <style>
+        .document-list {
+            margin-top: 20px;
+            text-align: left;
+        }
+        .document-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .document-item:hover {
+            transform: translateY(-3px); 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        }
+        
+        .document-item-info {
+            flex-grow: 1;
+            margin-left: 15px; 
+        }
+        
+        /* Checkbox para seleccionar */
+        .document-checkbox {
+            margin-right: 15px;
+            transform: scale(1.5);
+        }
+
+        .download-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            text-decoration: none;
+            padding: 8px 15px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            font-size: 0.9em;
+            transition: background-color 0.2s ease;
+        }
+
+        .download-link:hover {
+            background-color: #0056b3;
+        }
+
+        .filter-controls {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            padding: 8px 15px;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #555;
+            font-weight: 500;
+        }
+        .filter-btn:hover {
+            background-color: #e0e0e0;
+        }
+        .filter-btn.active {
+            background-color: var(--primary-color, #007bff);
+            color: white;
+            border-color: var(--primary-color, #007bff);
+        }
+        
+        /* Controles de borrado */
+        .delete-controls {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+        #delete-selected-btn {
+            background-color: #e53935;
+            color: white;
+            border-color: #e53935;
+        }
+        #delete-selected-btn:hover {
+            background-color: #c62828;
+        }
+
+        .document-type-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .document-date {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+
+        .subido-por {
+            font-size: 0.8em;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+    </style>
+</head>
+<body>
+    
+    <div class="card" style="max-width: 800px; margin: 50px auto; transition: none; transform: none;">
+        
+        <h2>Información del Camión</h2>
+        <div id="truck-info" style="text-align: left; margin-bottom: 20px;">
+            <p><strong>Patente:</strong> <span id="plate"></span></p>
+            <p><strong>Modelo:</strong> <span id="model"></span></p>
+            <p><strong>Conductor:</strong> <span id="driver"></span></p>
+        </div>
+        
+        <hr>
+
+        <h3>Documentos Asociados</h3>
+
+        <div class="filter-controls">
+            <button id="filter-all" class="filter-btn active" onclick="filterDocuments('all')">
+                <i data-feather="list"></i> Todos
+            </button>
+            <button id="filter-factura" class="filter-btn" onclick="filterDocuments('Factura')">
+                <i data-feather="file-text"></i> Facturas
+            </button>
+            <button id="filter-devolucion" class="filter-btn" onclick="filterDocuments('Devolucion')">
+                <i data-feather="corner-up-left"></i> Devoluciones
+            </button>
+        </div>
+        
+        <div class="delete-controls">
+            <button id="select-all-btn" class="filter-btn">
+                <i data-feather="check-square"></i> Seleccionar Todos
+            </button>
+            <button id="delete-selected-btn" class="filter-btn">
+                <i data-feather="trash-2"></i> Eliminar Seleccionados
+            </button>
+        </div>
+
+        <div id="documents-container" class="document-list">
+            <!-- Aquí se cargan los documentos -->
+        </div>
+        
+        <a href="index.html" class="btn" style="margin-top: 20px;">Volver al Panel</a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+
+    <script>
+        // Variable global para guardar todos los documentos de este camión
+        let allTruckDocuments = [];
+        const documentsContainer = document.getElementById('documents-container');
+        const API_URL = 'http://127.0.0.1:8000/api';
+
+        // --- Funciones de Sesión y Headers ---
+        function getSession() {
+            const sessionData = localStorage.getItem('logitrack_session');
+            if (!sessionData) {
+                console.error('No hay sesión guardada.');
+                window.location.href = 'login.html';
+                return null;
+            }
+            const session = JSON.parse(sessionData);
+            if (!session.token) {
+                console.error('La sesión no tiene token.');
+                window.location.href = 'login.html';
+                return null;
+            }
+            return session;
+        }
+
+        function getAuthHeaders() {
+            const session = getSession();
+            if (!session) return null; 
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': `Token ${session.token}`
+            };
+        }
+
+        /**
+         * Filtra y renderiza los documentos en la lista
+         */
+        function filterDocuments(filterType) {
+            
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            let btnId = `filter-all`;
+            if (filterType === 'Factura') btnId = 'filter-factura';
+            if (filterType === 'Devolucion') btnId = 'filter-devolucion';
+            
+            const activeBtn = document.getElementById(btnId);
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+            }
+
+            const filteredDocuments = (filterType === 'all')
+                ? allTruckDocuments
+                : allTruckDocuments.filter(doc => doc.tipo === filterType);
+
+            if (filteredDocuments.length === 0) {
+                documentsContainer.innerHTML = '<p>No se encontraron documentos de este tipo.</p>';
+                return;
+            }
+
+            filteredDocuments.sort((a, b) => new Date(b.fecha_subida) - new Date(a.fecha_subida));
+
+            documentsContainer.innerHTML = filteredDocuments.map(doc => {
+                const docDate = new Date(doc.fecha_subida);
+                const formattedDate = docDate.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                const formattedTime = docDate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+                
+                const urlParts = doc.archivo.split('/');
+                const fileName = urlParts[urlParts.length - 1];
+
+                return `
+                    <div class="document-item">
+                        <input type="checkbox" class="document-checkbox" data-doc-id="${doc.id}">
+                        
+                        <div class="document-item-info">
+                            <div>
+                                <strong>Documento:</strong> ${fileName}<br>
+                                <span class="document-type-badge">${doc.tipo}</span>
+                                <span class="document-date"> - ${formattedDate} ${formattedTime}</span>
+                                <div class="subido-por">
+                                    <strong>Subido por:</strong> ${doc.subido_por || 'Usuario'}
+                                </div>
+                            </div>
+                        </div>
+                        <a href="${doc.archivo}" download="${fileName}" class="download-link" target="_blank" rel="noopener noreferrer">
+                            <i data-feather="download" width="16" height="16"></i>
+                            Descargar
+                        </a>
+                    </div>
+                `;
+            }).join('');
+            
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
+        }
+        
+        // --- Función para seleccionar todos ---
+        function toggleSelectAll() {
+            const checkboxes = document.querySelectorAll('.document-checkbox');
+            const isChecked = checkboxes.length > 0 && checkboxes[0].checked;
+            checkboxes.forEach(cb => {
+                cb.checked = !isChecked;
+            });
+        }
+
+        // --- Función para borrar seleccionados ---
+        async function deleteSelectedDocuments() {
+            const checkboxes = document.querySelectorAll('.document-checkbox:checked');
+            if (checkboxes.length === 0) {
+                alert('No hay documentos seleccionados para eliminar.');
+                return;
+            }
+
+            if (!confirm(`¿Estás seguro de que quieres eliminar ${checkboxes.length} documento(s)? Esta acción no se puede deshacer.`)) {
+                return;
+            }
+
+            const headers = getAuthHeaders();
+            if (!headers) return;
+
+            const deletePromises = [];
+            checkboxes.forEach(cb => {
+                const docId = cb.dataset.docId;
+                const deleteUrl = `${API_URL}/documentos/${docId}/`;
+                deletePromises.push(
+                    fetch(deleteUrl, {
+                        method: 'DELETE',
+                        headers: headers
+                    })
+                );
+            });
+
+            try {
+                const results = await Promise.all(deletePromises);
+                
+                const failed = results.filter(res => !res.ok);
+                if (failed.length > 0) {
+                     throw new Error(`${failed.length} documentos no se pudieron eliminar.`);
+                }
+
+                alert('Documentos eliminados correctamente.');
+                window.location.reload(); 
+                
+            } catch (error) {
+                console.error('Error al eliminar documentos:', error);
+                alert(`Ocurrió un error: ${error.message}`);
+            }
+        }
+
+        // --- Cargar documentos específicos del camión ---
+        async function loadTruckDocuments(plate) {
+            const headers = getAuthHeaders();
+            if (!headers) return;
+
+            try {
+                // Usar el filtro por vehículo específico
+                const response = await fetch(`${API_URL}/documentos/?vehiculo=${plate}`, {
+                    method: 'GET',
+                    headers: headers
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Error al cargar documentos');
+                }
+                
+                const data = await response.json();
+                allTruckDocuments = data;
+                
+                console.log(`Documentos cargados para ${plate}:`, allTruckDocuments);
+                
+                // Renderizar todos los documentos
+                filterDocuments('all');
+
+            } catch (error) {
+                console.error('Error al cargar documentos:', error);
+                documentsContainer.innerHTML = '<p>No se pudieron cargar los documentos.</p>';
+            }
+        }
+
+        // --- Lógica de carga principal ---
+        document.addEventListener('DOMContentLoaded', async function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const plate = urlParams.get('patente');
+            
+            const plateEl = document.getElementById('plate');
+            const modelEl = document.getElementById('model');
+            const driverEl = document.getElementById('driver');
+            
+            if (!plate) {
+                document.getElementById('truck-info').innerHTML = '<p>Error: No se especificó una patente.</p>';
+                return;
+            }
+
+            const headers = getAuthHeaders();
+            if (!headers) return; 
+
+            try {
+                // 1. Cargar info del camión
+                const trucks = JSON.parse(localStorage.getItem('logitrack_trucks')) || [];
+                const truck = trucks.find(t => t.patente === plate);
+                if (truck) {
+                    if(plateEl) plateEl.textContent = truck.patente;
+                    if(modelEl) modelEl.textContent = truck.modelo || 'No registrado'; 
+                    if(driverEl) driverEl.textContent = truck.conductor_nombre || 'No registrado';
+                } else {
+                    if(plateEl) plateEl.textContent = plate;
+                    if(modelEl) modelEl.textContent = 'Camión no encontrado';
+                }
+
+                // 2. Cargar Documentos específicos de este camión
+                await loadTruckDocuments(plate);
+
+                // 3. Conectar los botones a las funciones
+                const selectAllBtn = document.getElementById('select-all-btn');
+                const deleteSelectedBtn = document.getElementById('delete-selected-btn');
+                
+                if (selectAllBtn) selectAllBtn.onclick = toggleSelectAll;
+                if (deleteSelectedBtn) deleteSelectedBtn.onclick = deleteSelectedDocuments;
+
+            } catch (error) {
+                console.error('Error al cargar la página:', error);
+                documentsContainer.innerHTML = '<p>No se pudieron cargar los documentos.</p>';
+            }
+            
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
+        });
+    </script>
+</body>
+</html>
