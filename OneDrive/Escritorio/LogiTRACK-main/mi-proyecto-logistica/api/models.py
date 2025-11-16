@@ -13,6 +13,9 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     user_type = models.CharField(max_length=20, choices=USER_TYPE_CHOICES, default='empresa')
     vehiculo_asignado = models.ForeignKey('Vehiculo', on_delete=models.SET_NULL, null=True, blank=True)
+    # NUEVOS CAMPOS
+    rut = models.CharField(max_length=20, blank=True, null=True)
+    nombre_empresa = models.CharField(max_length=200, blank=True, null=True)
 
 class Vehiculo(models.Model):
     patente = models.CharField(max_length=10, unique=True, primary_key=True)

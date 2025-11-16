@@ -5,25 +5,39 @@ from .models import Vehiculo, Documento, UserProfile
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
-        fields = ['user_type', 'vehiculo_asignado']
+        fields = ['user_type', 'vehiculo_asignado', 'rut', 'nombre_empresa']  # CAMPOS AGREGADOS
 
 class UserSerializer(serializers.ModelSerializer):
     profile = UserProfileSerializer(read_only=True)
+    # NUEVOS CAMPOS PARA EL REGISTRO
+    rut = serializers.CharField(write_only=True, required=False, allow_blank=True)
+    nombre_empresa = serializers.CharField(write_only=True, required=False, allow_blank=True)
     
     class Meta:
         model = User
-        fields = ['id', 'username', 'password', 'first_name', 'email', 'profile']
+        fields = ['id', 'username', 'password', 'first_name', 'email', 'profile', 'rut', 'nombre_empresa']  # CAMPOS AGREGADOS
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
+        # Extraer los nuevos campos
+        rut = validated_data.pop('rut', '')
+        nombre_empresa = validated_data.pop('nombre_empresa', '')
+        
+        # Crear el usuario
         user = User.objects.create_user(
             username=validated_data['username'],
             email=validated_data['email'],
-            first_name=validated_data['first_name'],
+            first_name=validated_data.get('first_name', ''),
             password=validated_data['password']
         )
-        # Crear perfil automáticamente como empresa
-        UserProfile.objects.create(user=user, user_type='empresa')
+        
+        # Crear perfil automáticamente como empresa con los nuevos campos
+        UserProfile.objects.create(
+            user=user, 
+            user_type='empresa',
+            rut=rut,
+            nombre_empresa=nombre_empresa
+        )
         return user
 
 class VehiculoSerializer(serializers.ModelSerializer):

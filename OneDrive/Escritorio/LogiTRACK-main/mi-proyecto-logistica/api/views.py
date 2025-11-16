@@ -164,6 +164,9 @@ class RegisterView(generics.CreateAPIView):
     serializer_class = UserSerializer
     permission_classes = [permissions.AllowAny]
 
+    # ELIMINAMOS el método create() personalizado porque
+    # el UserSerializer ya se encarga de crear el UserProfile
+
 class CustomLoginView(ObtainAuthToken):
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data,
@@ -176,9 +179,20 @@ class CustomLoginView(ObtainAuthToken):
             user_profile = UserProfile.objects.get(user=user)
             user_type = user_profile.user_type
             vehiculo_asignado = user_profile.vehiculo_asignado.patente if user_profile.vehiculo_asignado else None
+            # NUEVOS CAMPOS AGREGADOS
+            rut = user_profile.rut
+            nombre_empresa = user_profile.nombre_empresa
         except UserProfile.DoesNotExist:
+            # Si no existe UserProfile, creamos uno por defecto
+            user_profile = UserProfile.objects.create(
+                user=user,
+                user_type='empresa'
+            )
             user_type = 'empresa'
             vehiculo_asignado = None
+            rut = ''
+            nombre_empresa = ''
+            print(f"UserProfile creado automáticamente para: {user.username}")
         
         return Response({
             'token': token.key,
@@ -186,7 +200,10 @@ class CustomLoginView(ObtainAuthToken):
             'username': user.username,
             'fullname': user.first_name,
             'user_type': user_type,
-            'vehiculo_asignado': vehiculo_asignado
+            'vehiculo_asignado': vehiculo_asignado,
+            # NUEVOS CAMPOS AGREGADOS
+            'rut': rut,
+            'nombre_empresa': nombre_empresa
         })
 
 class VehiculoViewSet(viewsets.ModelViewSet):
